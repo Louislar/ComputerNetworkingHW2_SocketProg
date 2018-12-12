@@ -12,7 +12,7 @@ class loginGUI:
         self.startBtn=0
         self.inputID=0
         self.isServerOnline=False
-        self.serverStatus='Server狀態: Offline'
+        self.serverStatus='Server狀態: Offline\n按F5更新狀態'
 
     def start(self):
         self.create_window()
@@ -47,10 +47,13 @@ class loginGUI:
                                       width=15, height=3)
         self.serverTipLabel.pack(anchor=tk.S)  # 固定文字訊息
 
+        #用F5當作更新的trigger
+        self.mainWin.bind('<F5>', self.checkServerOnline)
+
         #不斷在確認sever是否在線上的thread, 每5秒確認一次
-        thread = threading.Thread(target=self.checkServerOnline, args=())
-        thread.setDaemon(True)      #讓thread會跟著主程式一起結束
-        thread.start()
+        #thread = threading.Thread(target=self.checkServerOnline, args=())
+        #thread.setDaemon(True)      #讓thread會跟著主程式一起結束
+        #thread.start()
 
         self.mainWin.mainloop()
 
@@ -68,22 +71,21 @@ class loginGUI:
                 tempClientGUI.createWindow()
 
     #確認server是否是在線上
-    def checkServerOnline(self):
+    def checkServerOnline(self, event):
         try:
-            while True:
-                testConnection=MultithreadingTCPClient.MultithreadingTCPClient('127.0.0.1', 12000)
-                testConnection.sendToServer('test ')
-                isConnected =testConnection.isConnect
-                if isConnected:
-                    testConnection.stopConnect()
-                    self.isServerOnline=True
-                else:
-                    print('Server is not online')
-                    testConnection.stopConnect()
-                    self.isServerOnline=False
-                self.serverTipLabel.config(text=self.serverStatus)
-                self.serverStatus= 'Server狀態: Online' if self.isServerOnline else 'Server狀態: Offline'
-                time.sleep(5)
+            print('user hit F5')
+            testConnection=MultithreadingTCPClient.MultithreadingTCPClient('127.0.0.1', 12000)
+            testConnection.setTCPConnection(False)
+            isConnected =testConnection.isConnect
+            if isConnected:
+                testConnection.stopConnect()
+                self.isServerOnline=True
+            else:
+                print('Server is not online')
+                testConnection.stopConnect()
+                self.isServerOnline=False
+            self.serverStatus = 'Server狀態: Online\n按F5更新狀態' if self.isServerOnline else 'Server狀態: Offline\n按F5更新狀態'
+            self.serverTipLabel.config(text=self.serverStatus)
         except:
             pass
 

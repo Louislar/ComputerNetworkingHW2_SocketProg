@@ -7,6 +7,8 @@ class MultithreadingTCPServer:
         self.serverName = name
         self.serverPort = port
         self.userIDList = []        #儲存所有已登入的userID
+        self.userSocketList={}            #用userID來尋找那個user的socket(Client socket)
+        self.userThreadList={}      #儲存server對各個user服務的thread
 
     def start(self):
         try:
@@ -40,7 +42,10 @@ class MultithreadingTCPServer:
             clientSocket.close()
         finally:
             print('Disconnecting to', clientName, ':', clientPort)
-        
+
+
+    def sendToAllClient(self):
+        pass
 
 if len(sys.argv) < 3:
     serverName = '127.0.0.1'

@@ -11,6 +11,12 @@ class ClientGUI:
         self.serverName='127.0.0.1'
         self.serverPort=12000
 
+    # 當使用者按下enter時, 作用跟按下送出訊息的按鈕一樣, 要把Entry的訊息傳給server
+    def userHitReturn(self, event):
+        print('user hit return')
+        sendMsg=self.chatUserTypeBlank.get()
+        self.sendMsgToServer(sendMsg)
+
     #主畫面要建立出來, 包括按鈕, 聊天室, 排版
     def createWindow(self):
         self.win = tk.Tk()
@@ -26,24 +32,28 @@ class ClientGUI:
         self.chatUserTypeBlank = tk.Entry(self.win)
         self.chatUserTypeBlank.config(font=('Arial', 20))
         self.chatUserTypeBlank.place(height=50, width=350, x=10, y=420)
+        self.chatUserTypeBlank.bind('<Return>', self.userHitReturn)
 
         self.setTCPClient()
+        self.win.protocol("WM_DELETE_WINDOW", self.userCloseChatbox)         #關掉聊天室窗就要讓連線結束
         self.win.mainloop()
 
-    #引用TCP model的連線性能
+    #引用TCP model的連線性能, 這邊採用persistent TCP, 所以需要將連線維持住, 直到程式結束
     def setTCPClient(self):
         self.Client=MultithreadingTCPClient.MultithreadingTCPClient(self.serverName, self.serverPort)
         print("ClientGUI start connecting ")
-        self.Client.sendToServer('Client send a msg ')
 
+        #TCP連線要一直持續, 所以會有loop在裡面, 所以要用thread做才行
+        thread = threading.Thread(target=self.Client.setTCPConnection, args=(True,))
+        thread.setDaemon(True)      #讓thread會跟著主程式一起結束
+        thread.start()
+
+    #送訊息給server
     def sendMsgToServer(self, msg):
         self.Client.sendToServer(msg)
 
-    #當使用者按下enter時, 作用跟按下送出訊息的按鈕一樣
-    def userHitReturn(self):
-        pass
+    def userCloseChatbox(self):
+        self.Client.stopConnect()
+        self.win.destroy()
 
-    #應該要多建一個TCP連線, 讓client無時無刻都在監聽server有沒有發訊息, 也順便確認server是否還在線上
-    def listenToServer(self):
 
-        pass
