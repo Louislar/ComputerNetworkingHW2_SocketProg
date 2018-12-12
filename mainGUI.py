@@ -4,6 +4,9 @@ import tkinter as tk
 def startTCPConnection(serverIP, serverPort):
     a=1
 
+def hitReturn(event):
+    print('You hit return!!')
+
 #建立chat box window
 def chatWindowCreate():
     # 建立聊天室的主畫面, 剛剛建立的是登入畫面
@@ -12,6 +15,19 @@ def chatWindowCreate():
     chatWin.geometry('500x500')  # 調整視窗大小
     chatWin.config(bg='black')  # 視窗顏色
     chatWin.iconbitmap("iconfinder_github_317712_wPW_icon.ico")  # 視窗icon
+
+    #建立顯示聊天的label
+    chatContent=tk.Label(chatWin)
+    chatContent.config(bg='white')
+    chatContent.place(height=400, width=350, x=10, y=10)
+
+    #建立使用者輸入欄位
+    chatUserTypeBlank=tk.Entry(chatWin)
+    chatUserTypeBlank.config(font=('Arial', 20))
+    chatUserTypeBlank.place(height=50, width=350, x=10, y=420)
+
+    chatUserTypeBlank.bind('<Return>', hitReturn)
+
     chatWin.mainloop()
     return chatWin
 
@@ -23,6 +39,8 @@ def startBtnOnClick():
     print("What's in the Entry: "+userID)
     if userID=='':
         mainWin.quit()
+        chatWin = chatWindowCreate()
+        return chatWin
     else:
         mainWin.quit()
         chatWin=chatWindowCreate()

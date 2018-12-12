@@ -21,9 +21,9 @@ class MultithreadingTCPClient:
                 thread = threading.Thread(target = self.__listening, args = (clientSocket,))
                 thread.start()
                 self.client_socket=clientSocket                 #把client socket記錄下來
-                #while True:
-                #    sentence = input()
-                #    clientSocket.send(sentence.encode())        #送出訊息給server
+                while True:
+                    sentence = input()
+                    clientSocket.send(sentence.encode())        #送出訊息給server
                 self.isConnect = True
         except:
             pass
@@ -45,10 +45,26 @@ class MultithreadingTCPClient:
         except:
             pass
 
-    #送訊息給server, 包含需要先建立的TCP連線
+    #送一次訊息給server, 包含需要先建立的TCP連線, 送完訊息後Client就斷開連線了, 也就無法接收server的訊息了
     def sendToServer(self, sendMsg):
-        self.client_socket.send(sendMsg.encode())
+        try:
+            with socket(AF_INET, SOCK_STREAM) as clientSocket:
+                print('Connect to server', self.serverName, ':', self.serverPort)
+                clientSocket.connect((self.serverName, self.serverPort))
+                clientAddress, clientPort = clientSocket.getsockname()
+                print('Client', clientAddress, ':', clientPort)
+                print('Connecting to server', self.serverName, ':', self.serverPort)
+                self.client_socket=clientSocket                 #把client socket記錄下來
+                sentence = sendMsg + str(clientAddress)+ ':' + str(clientPort)
+                clientSocket.send(sentence.encode())        #送出訊息給server
+                self.isConnect = True
+        except:
+            self.isConnect = False
+            pass
+        finally:                    #整個try結束的時候執行
+            print('Connection shutdown')
 
+    #停止連線
     def stopConnect(self):
         self.stopConnecting=True
 
