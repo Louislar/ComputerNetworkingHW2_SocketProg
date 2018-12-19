@@ -74,6 +74,7 @@ class loginGUI:
     def checkServerOnline(self, event):
         try:
             print('user hit F5')
+
             testConnection=MultithreadingTCPClient.MultithreadingTCPClient('127.0.0.1', 12000)
             testConnection.setTCPConnection(False)
             isConnected =testConnection.isConnect

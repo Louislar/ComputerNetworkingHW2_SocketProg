@@ -1,4 +1,5 @@
 import tkinter as tk
+from PIL import Image, ImageTk
 
 #建立TCP Client連線
 def startTCPConnection(serverIP, serverPort):
@@ -6,11 +7,16 @@ def startTCPConnection(serverIP, serverPort):
 
 def hitReturn(event):
     print('You hit return!!')
+    #chatContent.config(text=chatUserTypeBlank.get())
+
+def hitBtn():
+    print('You hit button!!')
+
 
 #建立chat box window
 def chatWindowCreate():
     # 建立聊天室的主畫面, 剛剛建立的是登入畫面
-    chatWin = tk.Tk()
+    chatWin = tk.Toplevel()
     chatWin.title("Chat Box")  # 視窗標題
     chatWin.geometry('500x500')  # 調整視窗大小
     chatWin.config(bg='black')  # 視窗顏色
@@ -25,6 +31,13 @@ def chatWindowCreate():
     chatUserTypeBlank=tk.Entry(chatWin)
     chatUserTypeBlank.config(font=('Arial', 20))
     chatUserTypeBlank.place(height=50, width=350, x=10, y=420)
+
+    #建立使用者輸入button
+    #image_pil=Image.open("playbtn.jpg").resize((120, 50))
+    #btnImg=ImageTk.PhotoImage(image_pil)
+    chatEnterBtn=tk.Button(chatWin)
+    chatEnterBtn.config(text='send', bg='gray', font=('Arial', 23), command=hitBtn)
+    chatEnterBtn.place(height=50, width=120, x=370, y=420)
 
     chatUserTypeBlank.bind('<Return>', hitReturn)
 
@@ -46,6 +59,10 @@ def startBtnOnClick():
         chatWin=chatWindowCreate()
         return chatWin
 
+
+#聊天室的聊天部分label , 先建立好變數而已
+chatContent=0
+chatUserTypeBlank=0
 
 #紀錄使用者輸入ID
 userID=''
