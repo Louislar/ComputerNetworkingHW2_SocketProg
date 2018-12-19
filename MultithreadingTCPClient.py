@@ -49,7 +49,7 @@ class MultithreadingTCPClient:
             pass
 
     #與server建立TCP連線, 並決定連線是否要持續
-    def setTCPConnection(self, isPersistent):
+    def setTCPConnection(self, isPersistent, myID='testConnection'):
         try:
             with socket(AF_INET, SOCK_STREAM) as clientSocket:
                 print('Connect to server', self.serverName, ':', self.serverPort)
@@ -60,6 +60,7 @@ class MultithreadingTCPClient:
                 thread = threading.Thread(target=self.__listening, args=(clientSocket,))
                 thread.start()
                 self.client_socket=clientSocket                 #把client socket記錄下來
+                clientSocket.send(myID.encode())
                 self.isConnect = True
                 while not self.stopConnecting:
                     if not isPersistent:

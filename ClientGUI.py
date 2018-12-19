@@ -54,7 +54,7 @@ class ClientGUI:
         print("ClientGUI start connecting ")
 
         #TCP連線要一直持續, 所以會有loop在裡面, 所以要用thread做才行
-        self.thread = threading.Thread(target=self.Client.setTCPConnection, args=(True,))
+        self.thread = threading.Thread(target=self.Client.setTCPConnection, args=(True, self.ID))
         self.thread.setDaemon(True)      #讓thread會跟著主程式一起結束
         self.thread.start()
 
