@@ -76,7 +76,8 @@ class MultithreadingTCPClient:
     #送一次訊息給server
     def sendToServer(self, sendMsg, myID):
         try:
-            sentence = sendMsg + ' ---by '+ myID + ' from ' + str(self.clientAddress)+ ':' + str(self.clientPort)
+            #sentence = sendMsg + ' ---by '+ myID + ' from ' + str(self.clientAddress)+ ':' + str(self.clientPort)
+            sentence = '[' + myID + ']: ' + sendMsg
             self.client_socket.send(sentence.encode())        #送出訊息給server
             self.isConnect = True
         except:
