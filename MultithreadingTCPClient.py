@@ -9,6 +9,7 @@ class MultithreadingTCPClient:
         self.stopConnecting=False
         self.isConnect=False
         self.receive=''             #從server收到的訊息
+        self.onlineID=''            #server會傳送第二次的訊息, 是線上ID清單
 
 
     def start(self):
@@ -45,6 +46,10 @@ class MultithreadingTCPClient:
                 sentence = message.decode()
                 self.receive=sentence
                 print(sentence)
+                #接收到的第二個msg應該為在線ID清單
+                self.onlineID = clientSocket.recv(1024)
+                self.onlineID=self.onlineID.decode()
+                print('all id '+self.onlineID)
         except:
             pass
 
@@ -66,7 +71,7 @@ class MultithreadingTCPClient:
                     if not isPersistent:
                         break;
         except:
-            self.isConnect = False
+            self.isConnect = False          #代表連線並沒有成功, 意味著伺服器不在線上
             pass
         finally:                    #整個try結束的時候執行
             print('Connection shutdown')

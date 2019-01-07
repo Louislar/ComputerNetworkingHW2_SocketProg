@@ -39,6 +39,11 @@ def chatWindowCreate():
     chatEnterBtn.config(text='send', bg='gray', font=('Arial', 23), command=hitBtn)
     chatEnterBtn.place(height=50, width=120, x=370, y=420)
 
+    #建立誰在線上的label
+    serverStateLabel=tk.Label(chatWin)
+    serverStateLabel.config(bg='white', justify=tk.LEFT, anchor=tk.NW)
+    serverStateLabel.place(height=350, width=120, x=370, y=10)
+
     chatUserTypeBlank.bind('<Return>', hitReturn)
 
     chatWin.mainloop()

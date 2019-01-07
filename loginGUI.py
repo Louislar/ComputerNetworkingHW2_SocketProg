@@ -63,7 +63,8 @@ class loginGUI:
         self.inputID = self.userIDEntry.get()
         print("What's in the Entry: " + self.inputID)
         if self.inputID == '':
-            self.mainWin.quit()
+            #self.mainWin.quit()
+            pass
         else:
             if self.isServerOnline:
                 self.mainWin.quit()

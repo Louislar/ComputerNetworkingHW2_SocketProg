@@ -25,7 +25,8 @@ class ClientGUI:
 
     #主畫面要建立出來, 包括按鈕, 聊天室, 排版
     def createWindow(self):
-        self.win = tk.Tk()
+        #self.win = tk.Tk()
+        self.win=tk.Toplevel()
         self.win.title("Chat Box  ID: "+str(self.ID)+"  Server: "+ self.serverName+":"+str(self.serverPort))  # 視窗標題
         self.win.geometry('500x500')  # 調整視窗大小
         self.win.config(bg='black')  # 視窗顏色
@@ -43,6 +44,11 @@ class ClientGUI:
         self.chatEnterBtn = tk.Button(self.win)
         self.chatEnterBtn.config(text='send', bg='gray', font=('Arial', 23), command=self.userHitSendBtn)
         self.chatEnterBtn.place(height=50, width=120, x=370, y=420)
+        #建立server實時狀態的label
+        # 建立誰在線上的label
+        self.userStateLabel = tk.Label(self.win)
+        self.userStateLabel.config(bg='white', justify=tk.LEFT, anchor=tk.NW)
+        self.userStateLabel.place(height=350, width=120, x=370, y=10)
 
         self.setTCPClient()
         self.win.protocol("WM_DELETE_WINDOW", self.userCloseChatbox)         #關掉聊天室窗就要讓連線結束
@@ -62,6 +68,11 @@ class ClientGUI:
         self.threadForChatLabel=threading.Thread(target=self.updateChatPanel, args=())
         self.threadForChatLabel.setDaemon(True)  # 讓thread會跟著主程式一起結束
         self.threadForChatLabel.start()
+
+        #用來顯示所有online user視窗的thread
+        self.threadForOnlineUser=threading.Thread(target=self.updateOnlineIDPanel, args=())
+        self.threadForOnlineUser.setDaemon(True)
+        self.threadForOnlineUser.start()
 
     #送訊息給server
     def sendMsgToServer(self, msg):
@@ -83,5 +94,18 @@ class ClientGUI:
             pass
         finally:
             print("chat window can't update, because window has been shut down")
+
+    #更新在線ID Panel
+    def updateOnlineIDPanel(self):
+        try:
+            while True:
+                msg=self.Client.onlineID             #client socket保留server傳送過來的訊息
+                self.userStateLabel.config(text=msg)   #將傳入的msg更新到label上
+                time.sleep(1)                       #讓每次更新間隔時間為1秒
+        except:
+            pass
+        finally:
+            print("Online ID window can't update, because window has been shut down")
+        pass
 
 

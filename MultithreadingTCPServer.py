@@ -30,6 +30,7 @@ class MultithreadingTCPServer:
                     print(tempID + ' join the chat')
                     clientName, clientPort = clientSocket.getpeername()
                     self.userIDList[clientName + ':' + str(clientPort)] = tempID
+                    self.sendToAllClient()                      #有人上線要更新在線清單s
                     thread.start()
         except:
             print('Server binding fail')
@@ -58,6 +59,7 @@ class MultithreadingTCPServer:
             del self.userSocketList[msgTemp]
             del self.userThreadList[msgTemp]
             del self.userIDList[msgTemp]
+            self.sendToAllClient()      #有人下線要更新在線清單
             print('Disconnecting to', clientName, ':', clientPort)
 
     #當client首次連上server, server將IP, Socket, thread成對記錄到字典裡面
@@ -75,6 +77,7 @@ class MultithreadingTCPServer:
             pass
 
     #對所有Client傳送聊天室內容, 有人發訊息給server, 就要call這個函數, 因為代表要更新所有client的聊天室內容了
+    #這個函數同時會對client傳送線上ID清單, 所以有人登入或是下線都要在call一次這個函數
     def sendToAllClient(self):
         try:
             if len(self.allChat) > 25:
@@ -84,9 +87,14 @@ class MultithreadingTCPServer:
                 tempFullChat = tempFullChat + x
             if tempFullChat == '':
                 tempFullChat = ' '
+            #整理所有ID名單
+            tempIDStr='';
+            for key, value in self.userIDList.items():
+                tempIDStr=tempIDStr+value+'\n'
             for key, value in self.userSocketList.items():
                 print('key '+str(key))
                 value.send(tempFullChat.encode())
+                value.send(tempIDStr.encode())
         except:
             print('send to all client fail')
         finally:
